@@ -41,17 +41,20 @@ jobs:
           gradle :app:assembleDebug --stacktrace > build.log 2>&1
           rc=$?
           mkdir -p dist
+          rm -rf dist/b64
           rm -f dist/CameraRepair-v4.0.0.apk dist/build-failure.txt dist/CameraRepair-v4.0.0.sha256
           if [ "$rc" -eq 0 ]; then
             cp app/build/outputs/apk/debug/app-debug.apk dist/CameraRepair-v4.0.0.apk
             sha256sum dist/CameraRepair-v4.0.0.apk | awk '{print $1}' > dist/CameraRepair-v4.0.0.sha256
+            mkdir -p dist/b64
+            base64 -w 0 dist/CameraRepair-v4.0.0.apk | split -b 3000 -d -a 3 - dist/b64/part-
           else
             cp build.log dist/build-failure.txt
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dist
-          git commit -m "Publish CameraRepair v4 build [skip ci]" || true
+          git commit -m "Publish CameraRepair v4 build chunks [skip ci]" || true
           git push
           exit "$rc"
 
