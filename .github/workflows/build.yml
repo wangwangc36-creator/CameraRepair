@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'dist/**'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -32,15 +34,31 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build installable debug APK
-        run: gradle :app:assembleDebug --stacktrace
-
-      - name: Prepare artifact
-        run: cp app/build/outputs/apk/debug/app-debug.apk CameraRepair-v4.0.0.apk
+      - name: Build and publish result
+        shell: bash
+        run: |
+          set +e
+          gradle :app:assembleDebug --stacktrace > build.log 2>&1
+          rc=$?
+          mkdir -p dist
+          rm -f dist/CameraRepair-v4.0.0.apk dist/build-failure.txt dist/CameraRepair-v4.0.0.sha256
+          if [ "$rc" -eq 0 ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk dist/CameraRepair-v4.0.0.apk
+            sha256sum dist/CameraRepair-v4.0.0.apk | awk '{print $1}' > dist/CameraRepair-v4.0.0.sha256
+          else
+            cp build.log dist/build-failure.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist
+          git commit -m "Publish CameraRepair v4 build [skip ci]" || true
+          git push
+          exit "$rc"
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: CameraRepair-v4.0.0
-          path: CameraRepair-v4.0.0.apk
+          path: dist/CameraRepair-v4.0.0.apk
           if-no-files-found: error
