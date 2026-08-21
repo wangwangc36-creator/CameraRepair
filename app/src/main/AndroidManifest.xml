@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="false"
-        android:label="CameraRepair 3.0.1"
+        android:label="CameraRepair 4.0.0"
         android:supportsRtl="true">
 
         <meta-data
@@ -10,7 +10,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Safe hotfix: trims Camera2 face detection and video stabilization without blocking Meta native libraries." />
+            android:value="Reduce Meta video-call camera CPU load without blocking required native codec libraries." />
         <meta-data
             android:name="xposedminversion"
             android:value="93" />
