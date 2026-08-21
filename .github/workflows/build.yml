@@ -36,11 +36,11 @@ jobs:
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Prepare artifact
-        run: cp app/build/outputs/apk/debug/app-debug.apk CameraRepair-3.0.1-hotfix.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk CameraRepair-v4.0.0.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: CameraRepair-3.0.1-hotfix
-          path: CameraRepair-3.0.1-hotfix.apk
+          name: CameraRepair-v4.0.0
+          path: CameraRepair-v4.0.0.apk
           if-no-files-found: error
